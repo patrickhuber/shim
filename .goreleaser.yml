@@ -1,0 +1,56 @@
+project_name: shim
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+    # you may remove this if you don't need go generate
+    - go generate ./...
+builds:
+  - main: ./cmd/patch
+    id: "patch"
+    binary: "patch"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+  - main: ./cmd/shim
+    id: "shim"
+    binary: "shim"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+archives:
+  - id: patch
+    name_template: "{{.Binary}}-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
+    format: tar.gz
+    builds: 
+    - patch
+    format_overrides:
+      - goos: windows
+        format: zip  
+  - id: shim
+    name_template: "{{.Binary}}-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
+    format: tar.gz
+    builds: 
+    - shim
+    format_overrides:
+      - goos: windows
+        format: zip  
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
