@@ -1,10 +1,12 @@
 project_name: shim
+
 before:
   hooks:
     # You may remove this if you don't use go modules.
     - go mod tidy
     # you may remove this if you don't need go generate
     - go generate ./...
+
 builds:
   - main: ./cmd/patch
     id: "patch"
@@ -24,6 +26,7 @@ builds:
       - linux
       - windows
       - darwin
+
 archives:
   - id: patch
     name_template: "{{.Binary}}-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
@@ -54,3 +57,8 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+
+release:
+  github:
+    owner: patrickhuber
+    name: shim  
